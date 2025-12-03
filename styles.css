@@ -15,6 +15,11 @@
     margin: 0;
 }
 
+.tagmaster-buttons {
+    display: flex;
+    gap: 8px;
+}
+
 .tagmaster-stats {
     margin-bottom: 15px;
     padding: 10px;
@@ -59,4 +64,67 @@
     background: var(--background-primary);
     padding: 2px 8px;
     border-radius: 10px;
+}
+
+/* Suggestions Section */
+.tagmaster-suggestions {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid var(--background-modifier-border);
+}
+
+.tagmaster-no-suggestions {
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+.tagmaster-suggestion-item {
+    padding: 12px;
+    margin-bottom: 12px;
+    background: var(--background-secondary);
+    border-radius: 5px;
+    border-left: 3px solid var(--interactive-accent);
+}
+
+.tagmaster-suggestion-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.tagmaster-suggestion-tags {
+    font-weight: 600;
+    color: var(--text-normal);
+}
+
+.tagmaster-suggestion-score {
+    background: var(--interactive-accent);
+    color: var(--text-on-accent);
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 0.85em;
+    font-weight: 600;
+}
+
+.tagmaster-suggestion-reason {
+    color: var(--text-muted);
+    font-size: 0.9em;
+    margin: 4px 0;
+}
+
+.tagmaster-suggestion-files {
+    color: var(--text-faint);
+    font-size: 0.85em;
+    margin: 4px 0;
+}
+
+.tagmaster-suggestion-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.tagmaster-suggestion-actions button {
+    font-size: 0.9em;
 }

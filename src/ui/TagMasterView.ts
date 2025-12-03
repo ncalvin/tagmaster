@@ -40,7 +40,9 @@ export class TagMasterView extends ItemView {
         const header = container.createEl('div', { cls: 'tagmaster-header' });
         header.createEl('h3', { text: 'Tag Catalog' });
 
-        const scanButton = header.createEl('button', { text: 'Scan Vault', cls: 'mod-cta' });
+        const buttonContainer = header.createEl('div', { cls: 'tagmaster-buttons' });
+        
+        const scanButton = buttonContainer.createEl('button', { text: 'Scan Vault', cls: 'mod-cta' });
         scanButton.addEventListener('click', async () => {
             scanButton.disabled = true;
             scanButton.textContent = 'Scanning...';
@@ -52,6 +54,11 @@ export class TagMasterView extends ItemView {
             scanButton.textContent = 'Scan Vault';
             scanButton.disabled = false;
             this.renderTagList();
+        });
+
+        const suggestButton = buttonContainer.createEl('button', { text: 'Find Similar' });
+        suggestButton.addEventListener('click', () => {
+            this.showSuggestions();
         });
 
         // Stats
@@ -107,6 +114,79 @@ export class TagMasterView extends ItemView {
     private showTagDetails(tag: string, info: any) {
         console.log('Tag details:', tag, info);
         // TODO: Implement modal with tag details and actions
+    }
+
+    private showSuggestions() {
+        const catalog = this.plugin.indexer.getCatalog();
+        if (catalog.size === 0) {
+            return;
+        }
+
+        const suggestions = this.plugin.matcher.findSimilarTags(catalog);
+        
+        // Find or create suggestions container
+        let suggestionsContainer = this.containerEl.querySelector('.tagmaster-suggestions');
+        if (!suggestionsContainer) {
+            suggestionsContainer = this.containerEl.children[1].createEl('div', { 
+                cls: 'tagmaster-suggestions' 
+            });
+        } else {
+            suggestionsContainer.empty();
+        }
+
+        if (suggestions.length === 0) {
+            suggestionsContainer.createEl('p', { 
+                text: 'Nenhuma tag similar encontrada.',
+                cls: 'tagmaster-no-suggestions'
+            });
+            return;
+        }
+
+        suggestionsContainer.createEl('h4', { text: `${suggestions.length} Sugestões de Merge` });
+
+        suggestions.forEach(suggestion => {
+            const suggestionEl = suggestionsContainer.createEl('div', { 
+                cls: 'tagmaster-suggestion-item' 
+            });
+
+            const header = suggestionEl.createEl('div', { cls: 'tagmaster-suggestion-header' });
+            
+            header.createEl('span', { 
+                text: `${suggestion.sourceTag} → ${suggestion.targetTag}`,
+                cls: 'tagmaster-suggestion-tags'
+            });
+            
+            header.createEl('span', { 
+                text: `${Math.round(suggestion.similarity * 100)}%`,
+                cls: 'tagmaster-suggestion-score'
+            });
+
+            suggestionEl.createEl('p', { 
+                text: suggestion.reason,
+                cls: 'tagmaster-suggestion-reason'
+            });
+
+            suggestionEl.createEl('p', { 
+                text: `${suggestion.affectedFiles.length} arquivo(s) afetado(s)`,
+                cls: 'tagmaster-suggestion-files'
+            });
+
+            const actions = suggestionEl.createEl('div', { cls: 'tagmaster-suggestion-actions' });
+            
+            const applyBtn = actions.createEl('button', { 
+                text: 'Aplicar',
+                cls: 'mod-cta'
+            });
+            applyBtn.addEventListener('click', () => {
+                console.log('Apply suggestion:', suggestion);
+                // TODO: Implement merge operation
+            });
+
+            const ignoreBtn = actions.createEl('button', { text: 'Ignorar' });
+            ignoreBtn.addEventListener('click', () => {
+                suggestionEl.remove();
+            });
+        });
     }
 
     async onClose() {

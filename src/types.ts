@@ -15,10 +15,12 @@ export interface TagInfo {
 }
 
 export interface TagSuggestion {
+    type: 'merge' | 'rename' | 'hierarchy';
     sourceTag: string;
     targetTag: string;
     similarity: number;
-    occurrences: number;
+    occurrenceCount: number;
+    affectedFiles: string[];
     reason: string;
 }
 
@@ -53,6 +55,12 @@ export interface TagMasterSettings {
         underscoresToDashes: boolean;
         stripPunctuation: boolean;
     };
+    similarityThreshold: number;
+    similarityAlgorithms: {
+        levenshtein: boolean;
+        jaroWinkler: boolean;
+        tokenOverlap: boolean;
+    };
     similarityThresholds: {
         levenshtein: number;
         jaroWinkler: number;
@@ -75,6 +83,12 @@ export const DEFAULT_SETTINGS: TagMasterSettings = {
         removeDiacritics: true,
         underscoresToDashes: true,
         stripPunctuation: true
+    },
+    similarityThreshold: 0.75,
+    similarityAlgorithms: {
+        levenshtein: true,
+        jaroWinkler: true,
+        tokenOverlap: true
     },
     similarityThresholds: {
         levenshtein: 0.8,
