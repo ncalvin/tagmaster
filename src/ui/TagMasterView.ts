@@ -4,10 +4,16 @@ import type TagMasterPlugin from '../../main';
 
 export class TagMasterView extends ItemView {
     plugin: TagMasterPlugin;
+    private updateHandler: () => void;
 
     constructor(leaf: WorkspaceLeaf, plugin: TagMasterPlugin) {
         super(leaf);
         this.plugin = plugin;
+        
+        // Handler para atualizar a view quando o catálogo mudar
+        this.updateHandler = () => {
+            this.renderTagList();
+        };
     }
 
     getViewType(): string {
@@ -26,6 +32,9 @@ export class TagMasterView extends ItemView {
         const container = this.containerEl.children[1];
         container.empty();
         container.addClass('tagmaster-view');
+
+        // Registrar listener para atualizações do catálogo
+        this.plugin.indexer.on('catalog-updated', this.updateHandler);
 
         // Header
         const header = container.createEl('div', { cls: 'tagmaster-header' });
@@ -101,6 +110,7 @@ export class TagMasterView extends ItemView {
     }
 
     async onClose() {
-        // Cleanup
+        // Remover listener
+        this.plugin.indexer.off('catalog-updated', this.updateHandler);
     }
 }

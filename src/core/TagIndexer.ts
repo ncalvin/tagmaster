@@ -1,9 +1,9 @@
-import { TFile, Vault, MetadataCache } from 'obsidian';
+import { TFile, Vault, MetadataCache, Events } from 'obsidian';
 import { parseAllDocuments } from 'yaml';
 import type { TagOccurrence, TagInfo, TagMasterSettings } from '../types';
 import { TAG_WITH_BOUNDARY } from '../constants';
 
-export class TagIndexer {
+export class TagIndexer extends Events {
     private vault: Vault;
     private metadataCache: MetadataCache;
     private settings: TagMasterSettings;
@@ -11,6 +11,7 @@ export class TagIndexer {
     private isIndexing: boolean = false;
 
     constructor(vault: Vault, metadataCache: MetadataCache, settings: TagMasterSettings) {
+        super();
         this.vault = vault;
         this.metadataCache = metadataCache;
         this.settings = settings;
@@ -39,9 +40,13 @@ export class TagIndexer {
         }
 
         this.isIndexing = false;
+        this.trigger('catalog-updated');
     }
 
     async indexFile(file: TFile): Promise<void> {
+        // Remove existing occurrences for this file first
+        this.removeFileFromIndex(file.path);
+
         const content = await this.vault.cachedRead(file);
         const lines = content.split('\n');
 
@@ -55,6 +60,8 @@ export class TagIndexer {
         lines.forEach((line, lineNumber) => {
             this.indexInlineTags(file, line, lineNumber);
         });
+
+        this.trigger('catalog-updated');
     }
 
     private indexFrontmatterTags(file: TFile, tags: string | string[], content: string): void {
@@ -167,5 +174,6 @@ export class TagIndexer {
                 this.tagCatalog.delete(tag);
             }
         }
+        this.trigger('catalog-updated');
     }
 }

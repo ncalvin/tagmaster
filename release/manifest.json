@@ -1,0 +1,10 @@
+{
+  "id": "tagmaster",
+  "name": "TagMaster",
+  "version": "0.1.0",
+  "minAppVersion": "0.15.0",
+  "description": "Intelligent tag management with similarity detection, merge suggestions, batch operations, and undo support",
+  "author": "Calvin",
+  "authorUrl": "https://github.com/ncalvin",
+  "isDesktopOnly": false
+}
